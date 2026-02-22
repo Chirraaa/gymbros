@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import ExerciseProgressClient from "@/components/exercise-progress-client";
 
 export default async function ExerciseProgressPage({
@@ -12,18 +13,80 @@ export default async function ExerciseProgressPage({
 
   const { id } = await params;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/exercises/${id}/history`,
-    {
-      headers: { Cookie: "" },
-      cache: "no-store",
+  const sets = await prisma.exerciseSet.findMany({
+    where: {
+      workoutExercise: {
+        exerciseId: id,
+        workout: { userId },
+      },
+    },
+    include: {
+      workoutExercise: {
+        include: {
+          workout: { select: { date: true, name: true, id: true } },
+          exercise: { select: { name: true, category: true } },
+        },
+      },
+    },
+    orderBy: {
+      workoutExercise: { workout: { date: "asc" } },
+    },
+  });
+
+  if (sets.length === 0) notFound();
+
+  const sessionsMap = new Map<string, {
+    date: string;
+    workoutName: string;
+    workoutId: string;
+    sets: { reps: number; weight: number; isPersonalRecord: boolean }[];
+    maxWeight: number;
+    totalVolume: number;
+    bestSet: { reps: number; weight: number };
+  }>();
+
+  for (const set of sets) {
+    const workoutId = set.workoutExercise.workout.id;
+    if (!sessionsMap.has(workoutId)) {
+      sessionsMap.set(workoutId, {
+        date: set.workoutExercise.workout.date.toISOString(),
+        workoutName: set.workoutExercise.workout.name,
+        workoutId,
+        sets: [],
+        maxWeight: 0,
+        totalVolume: 0,
+        bestSet: { reps: 0, weight: 0 },
+      });
     }
+    const session = sessionsMap.get(workoutId)!;
+    session.sets.push({ reps: set.reps, weight: set.weight, isPersonalRecord: set.isPersonalRecord });
+    session.totalVolume += set.reps * set.weight;
+    if (set.weight > session.maxWeight) {
+      session.maxWeight = set.weight;
+      session.bestSet = { reps: set.reps, weight: set.weight };
+    }
+  }
+
+  const sessions = Array.from(sessionsMap.values());
+  if (sessions.length === 0) notFound();
+
+  const allTimeMaxWeight = Math.max(...sessions.map((s) => s.maxWeight), 0);
+  const allTimeBestSet = sessions.reduce(
+    (best, s) => (s.maxWeight > best.weight ? { reps: s.bestSet.reps, weight: s.maxWeight } : best),
+    { reps: 0, weight: 0 }
   );
 
-  if (!res.ok) notFound();
-  const data = await res.json();
-
-  if (data.sessions.length === 0) notFound();
-
-  return <ExerciseProgressClient data={data} exerciseId={id} />;
+  return (
+    <ExerciseProgressClient
+      exerciseId={id}
+      data={{
+        exerciseName: sets[0].workoutExercise.exercise.name,
+        exerciseCategory: sets[0].workoutExercise.exercise.category,
+        sessions,
+        allTimeMaxWeight,
+        allTimeBestSet,
+        totalSessions: sessions.length,
+      }}
+    />
+  );
 }
