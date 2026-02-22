@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dumbbell, Flame, Zap, TrendingUp, Plus, Users } from "lucide-react";
+import { Dumbbell, Flame, TrendingUp, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 
@@ -37,7 +37,6 @@ export default async function DashboardPage() {
     ? calculateBMI(user.weight, user.height)
     : null;
   const bmiCategory = bmi ? getBMICategory(bmi) : null;
-
   const friendCount = user._count.friendsAsA + user._count.friendsAsB;
 
   return (
@@ -173,6 +172,18 @@ export default async function DashboardPage() {
             })}
           </div>
         )}
+      </div>
+
+      {/* Donate */}
+      <div className="text-center pt-4 pb-2">
+        <a
+          href="https://www.paypal.com/donate/?hosted_button_id=GF6FRQX2JWK9Y"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          Enjoying GymBros? Support the project ♥
+        </a>
       </div>
     </div>
   );

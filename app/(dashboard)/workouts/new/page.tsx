@@ -139,8 +139,21 @@ export default function NewWorkoutPage() {
         }),
       });
       if (!res.ok) throw new Error("Failed to save");
-      const { workout } = await res.json();
-      toast.success("Workout logged! 💪", { description: "+50 XP earned" });
+      const { workout, levelUp, newLevel } = await res.json();
+
+      if (levelUp) {
+        toast.success(`Level ${newLevel} unlocked! 🎉`, {
+          description: "Loving GymBros? Support the project ♥",
+          action: {
+            label: "Donate",
+            onClick: () => window.open("https://www.paypal.com/donate/?hosted_button_id=GF6FRQX2JWK9Y", "_blank"),
+          },
+          duration: 8000,
+        });
+      } else {
+        toast.success("Workout logged! 💪", { description: "+50 XP earned" });
+      }
+
       router.push(`/workouts/${workout.id}`);
     } catch {
       toast.error("Failed to save workout");
@@ -306,15 +319,15 @@ export default function NewWorkoutPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeCategory === cat
+                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      activeCategory === cat
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground hover:text-foreground"
-                      }`}
+                    }`}
                   >
                     {cat}
                   </button>
                 ))}
-                {/* spacer so last item isn't flush against edge */}
                 <div className="shrink-0 w-4" />
               </div>
             </div>
