@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GymBros
+
+A progressive web app for tracking gym progress with your friends. Live at [gymbrostrack.vercel.app](https://gymbrostrack.vercel.app).
+
+## Features
+
+- Workout logging with sets, reps, and weight tracking
+- Automatic BMI calculation and progress charts
+- XP system with levels and ranks
+- Weekly leaderboard among friends (GymWars)
+- Hype reactions on friend workouts
+- Friend requests and social feed
+- Installable as a PWA on mobile
+
+## Stack
+
+- **Framework** — Next.js 16 (App Router)
+- **Auth** — Clerk
+- **Database** — Neon (PostgreSQL) + Prisma
+- **UI** — Shadcn UI + Tailwind CSS
+- **Charts** — Recharts
+- **Hosting** — Vercel
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/gymbros
+cd gymbros
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.local.example` to `.env.local` and fill in your keys:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+CLERK_WEBHOOK_SECRET=
+DATABASE_URL=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx prisma db push
+npm run dev
+```
 
-## Learn More
+## Environment Setup
 
-To learn more about Next.js, take a look at the following resources:
+You will need accounts on:
+- [Clerk](https://clerk.com) for authentication
+- [Neon](https://neon.tech) for the database
+- [Vercel](https://vercel.com) for deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set up a Clerk webhook pointing to `/api/webhooks/clerk` with `user.created` and `user.updated` events enabled.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Self Hosting
 
-## Deploy on Vercel
+This project is fully self-hostable. All services used have free tiers sufficient for personal use.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Support
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If you find this useful, you can support the project here: [Buy me a coffee](https://buymeacoffee.com/yourname)
+
+## License
+
+MIT
