@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id
+  username    String    @unique
+  email       String    @unique
+  imageUrl    String?
+  height      Float?
+  weight      Float?
+  xp          Int       @default(0)
+  level       Int       @default(1)
+  streak      Int       @default(0)
+  lastWorkout DateTime?
+  weeklyScore Float     @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workouts           Workout[]
+  sentRequests       FriendRequest[]   @relation("SentRequests")
+  receivedRequests   FriendRequest[]   @relation("ReceivedRequests")
+  friendsAsA         Friendship[]      @relation("FriendA")
+  friendsAsB         Friendship[]      @relation("FriendB")
+  hypesGiven         Hype[]            @relation("HypeGiver")
+  hypesReceived      Hype[]            @relation("HypeReceiver")
+  challengesSent     Challenge[]       @relation("ChallengeSender")
+  challengesReceived Challenge[]       @relation("ChallengeReceiver")
+  xpLogs             XPLog[]
+  achievements       UserAchievement[]
+}
+
+model Workout {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  notes     String?
+  date      DateTime @default(now())
+  duration  Int?
+  createdAt DateTime @default(now())
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises WorkoutExercise[]
+  hypes     Hype[]
+}
+
+model Exercise {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  category    String
+  description String?
+  muscleGroup String?
+
+  workoutExercises WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id         String @id @default(cuid())
+  workoutId  String
+  exerciseId String
+  orderIndex Int    @default(0)
+
+  workout  Workout       @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise Exercise      @relation(fields: [exerciseId], references: [id])
+  sets     ExerciseSet[]
+}
+
+model ExerciseSet {
+  id                String  @id @default(cuid())
+  workoutExerciseId String
+  setNumber         Int
+  reps              Int
+  weight            Float
+  isPersonalRecord  Boolean @default(false)
+
+  workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+}
+
+model FriendRequest {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+
+  userA User @relation("FriendA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB User @relation("FriendB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+}
+
+model Hype {
+  id         String   @id @default(cuid())
+  workoutId  String
+  giverId    String
+  receiverId String
+  createdAt  DateTime @default(now())
+
+  workout  Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  giver    User    @relation("HypeGiver", fields: [giverId], references: [id], onDelete: Cascade)
+  receiver User    @relation("HypeReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([workoutId, giverId])
+}
+
+model Challenge {
+  id            String   @id @default(cuid())
+  senderId      String
+  receiverId    String
+  type          String
+  description   String
+  target        Float
+  metric        String
+  startDate     DateTime
+  endDate       DateTime
+  status        String   @default("pending")
+  winnerId      String?
+  senderScore   Float    @default(0)
+  receiverScore Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  sender   User @relation("ChallengeSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ChallengeReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model XPLog {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id          String @id @default(cuid())
+  key         String @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int    @default(0)
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
