@@ -23,9 +23,7 @@ export default function ProgressCharts({ chartData, bmi, height, weight }: Props
   const bmiCategory = bmi ? getBMICategory(bmi) : null;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-2xl font-black">Progress</h1>
-
+    <div className="space-y-6">
       {/* BMI Card */}
       {bmi && bmiCategory && (
         <Card className="border-primary/20 bg-gradient-to-br from-card to-accent/10">
@@ -46,14 +44,11 @@ export default function ProgressCharts({ chartData, bmi, height, weight }: Props
                 <p>{weight} kg</p>
               </div>
             </div>
-            {/* BMI scale */}
             <div className="mt-4 relative h-3 rounded-full overflow-hidden bg-gradient-to-r from-blue-400 via-green-400 via-yellow-400 to-red-500">
-              {bmi && (
-                <div
-                  className="absolute top-0 w-3 h-3 bg-white rounded-full shadow border-2 border-gray-800 -translate-x-1/2"
-                  style={{ left: `${Math.min(((bmi - 15) / 25) * 100, 100)}%` }}
-                />
-              )}
+              <div
+                className="absolute top-0 w-3 h-3 bg-white rounded-full shadow border-2 border-gray-800 -translate-x-1/2"
+                style={{ left: `${Math.min(((bmi - 15) / 25) * 100, 100)}%` }}
+              />
             </div>
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
               <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span>
@@ -67,7 +62,7 @@ export default function ProgressCharts({ chartData, bmi, height, weight }: Props
         <CardHeader className="pb-2 pt-4">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-primary" />
-            Weekly Volume (kg)
+            Total Volume Per Workout (kg)
           </CardTitle>
         </CardHeader>
         <CardContent className="pb-4">

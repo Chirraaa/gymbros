@@ -140,7 +140,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="flex flex-col gap-4">
             {user.workouts.map((workout) => {
               const totalSets = workout.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
               const totalVolume = workout.exercises.reduce((acc, ex) =>
@@ -149,17 +149,21 @@ export default async function DashboardPage() {
               return (
                 <Link href={`/workouts/${workout.id}`} key={workout.id}>
                   <Card className="border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
-                    <CardContent className="py-3 px-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-sm">{workout.name}</p>
-                          <p className="text-xs text-muted-foreground">
+                    <CardContent className="py-5 px-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm truncate">{workout.name}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
                             {formatDistanceToNow(new Date(workout.date), { addSuffix: true })}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">{totalSets} sets</p>
-                          <p className="text-xs text-primary">{totalVolume.toFixed(0)} kg vol.</p>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs text-primary font-semibold">
+                            {totalVolume > 0 ? `${totalVolume.toFixed(0)} kg` : "BW"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {totalSets} {totalSets === 1 ? "set" : "sets"}
+                          </p>
                           {workout.hypes.length > 0 && (
                             <p className="text-xs text-orange-400">🔥 {workout.hypes.length}</p>
                           )}
