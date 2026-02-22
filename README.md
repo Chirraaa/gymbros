@@ -59,7 +59,7 @@ This project is fully self-hostable. All services used have free tiers sufficien
 
 ## Support
 
-If you find this useful, you can support the project here: [Buy me a coffee](https://buymeacoffee.com/yourname)
+If you find this useful: [Donate via PayPal](https://www.paypal.com/donate/?hosted_button_id=GF6FRQX2JWK9Y)
 
 ## License
 
