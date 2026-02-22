@@ -98,7 +98,7 @@ export default function FriendsClient({ friends, pendingReceived, pendingSent, p
       )}
 
       <Tabs defaultValue="friends">
-        <TabsList className="w-full">
+        <TabsList className="w-full gap-2">
           <TabsTrigger value="friends" className="flex-1">
             Friends {friends.length > 0 && (
               <Badge className="ml-1 bg-primary/20 text-primary text-xs h-4">{friends.length}</Badge>

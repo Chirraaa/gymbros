@@ -65,3 +65,22 @@ body {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.category-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+.category-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.category-scroll::-webkit-scrollbar-thumb {
+  background: hsl(270 70% 60% / 0.5);
+  border-radius: 2px;
+}
